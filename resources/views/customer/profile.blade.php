@@ -2,9 +2,20 @@
 @section('content')
 <div class="mx-auto max-w-3xl">
     <h1 class="mb-5 text-3xl font-bold">Akun Saya</h1>
-    <form method="post" action="{{ route('customer.profile.update') }}" class="grid gap-5 rounded-xl bg-white p-6 shadow">@csrf @method('patch')
+    <form method="post" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data" class="grid gap-5 rounded-xl bg-white p-6 shadow">@csrf @method('patch')
         <section>
             <h2 class="mb-3 text-lg font-bold">Data Kontak</h2>
+            <div class="mb-4 flex items-center gap-4">
+                @if(auth()->user()->avatar_path)
+                    <img class="h-20 w-20 rounded-full object-cover" src="{{ $mediaUrl(auth()->user()->avatar_path) }}" alt="{{ auth()->user()->name }}" decoding="async">
+                @else
+                    <div class="grid h-20 w-20 place-items-center rounded-full bg-green-100 text-2xl font-bold text-green-700">{{ substr(auth()->user()->name,0,1) }}</div>
+                @endif
+                <label class="grid gap-2">
+                    <span class="text-sm font-semibold">Foto Profil</span>
+                    <input class="field" name="avatar" type="file" accept="image/*">
+                </label>
+            </div>
             <div class="grid gap-4 md:grid-cols-2">
                 <label class="grid gap-2">
                     <span class="text-sm font-semibold">Nama</span>

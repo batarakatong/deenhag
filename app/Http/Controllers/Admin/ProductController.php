@@ -43,7 +43,9 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $product = Product::create($this->validated($request));
+        $this->syncVariants($product, $request);
         $this->syncOptions($product, $request);
+        $this->syncMaterialUsages($product, $request);
 
         return redirect()->route('admin.products.index')->with('status', 'Produk dibuat.');
     }
@@ -51,7 +53,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         return view('admin.products.form', [
-            'product' => $product->load(['options', 'materialUsages']),
+            'product' => $product->load(['variants', 'options', 'materialUsages']),
             'categories' => Category::all(),
             'materials' => Material::orderBy('name')->get(),
         ]);
@@ -60,7 +62,9 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $product->update($this->validated($request, $product));
+        $this->syncVariants($product, $request);
         $this->syncOptions($product, $request);
+        $this->syncMaterialUsages($product, $request);
 
         return redirect()->route('admin.products.index')->with('status', 'Produk diperbarui.');
     }
@@ -100,13 +104,13 @@ class ProductController extends Controller
         $data['is_custom_size'] = $request->boolean('is_custom_size');
         $data['is_active'] = $request->boolean('is_active');
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('public/product-images');
+            $data['image'] = $request->file('image')->store('product-images', 'public');
         } elseif ($product?->image) {
             $data['image'] = $product->image;
         }
         if ($request->hasFile('sample_images')) {
             $data['sample_images'] = collect($request->file('sample_images'))
-                ->map(fn ($file) => $file->store('public/product-samples'))
+                ->map(fn ($file) => $file->store('product-samples', 'public'))
                 ->values()
                 ->all();
         } elseif ($product?->sample_images) {
@@ -116,11 +120,35 @@ class ProductController extends Controller
         return $data;
     }
 
-    private function syncOptions(Product $product, Request $request): void
+    private function syncVariants(Product $product, Request $request): void
     {
-        if (! $request->filled('option_name')) {
+        if (! $request->has('variant_name')) {
             return;
         }
+
+        $product->variants()->delete();
+        foreach ($request->variant_name as $index => $name) {
+            if (! $name) {
+                continue;
+            }
+
+            $product->variants()->create([
+                'name' => $name,
+                'sku' => $request->variant_sku[$index] ?? null,
+                'price' => $request->variant_price[$index] ?? 0,
+                'min_qty' => $request->variant_min_qty[$index] ?? null,
+                'max_qty' => $request->variant_max_qty[$index] ?? null,
+                'is_active' => true,
+            ]);
+        }
+    }
+
+    private function syncOptions(Product $product, Request $request): void
+    {
+        if (! $request->has('option_name')) {
+            return;
+        }
+
         $product->options()->delete();
         foreach ($request->option_name as $index => $name) {
             if (! $name) {
@@ -134,20 +162,25 @@ class ProductController extends Controller
                 'is_active' => true,
             ]);
         }
+    }
 
-        if ($request->has('material_id')) {
-            $product->materialUsages()->delete();
-            foreach ($request->material_id as $index => $materialId) {
-                if (! $materialId) {
-                    continue;
-                }
-                $product->materialUsages()->create([
-                    'material_id' => $materialId,
-                    'usage_per_unit' => $request->usage_per_unit[$index] ?? 1,
-                    'usage_type' => $request->usage_type[$index] ?? 'per_item',
-                    'is_primary' => (int) ($request->primary_material ?? -1) === $index,
-                ]);
+    private function syncMaterialUsages(Product $product, Request $request): void
+    {
+        if (! $request->has('material_id')) {
+            return;
+        }
+
+        $product->materialUsages()->delete();
+        foreach ($request->material_id as $index => $materialId) {
+            if (! $materialId) {
+                continue;
             }
+            $product->materialUsages()->create([
+                'material_id' => $materialId,
+                'usage_per_unit' => $request->usage_per_unit[$index] ?? 1,
+                'usage_type' => $request->usage_type[$index] ?? 'per_item',
+                'is_primary' => (int) ($request->primary_material ?? -1) === $index,
+            ]);
         }
     }
 }

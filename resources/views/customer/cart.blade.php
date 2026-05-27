@@ -12,12 +12,12 @@
                         <div>
                             <div class="font-bold">{{ $item->product->name }}</div>
                             <div class="text-sm text-slate-600">Qty {{ $item->quantity }} | Rp {{ number_format($item->estimated_price, 0, ',', '.') }}</div>
-                            <div class="mt-2 text-sm text-slate-500">{{ collect($item->specifications)->flatten()->join(', ') }}</div>
+                            <div class="mt-2 text-sm text-slate-500">@include('partials.specifications', ['specifications' => $item->specifications])</div>
                             @if($item->design_file_path)
                                 @php($isImage = str($item->design_file_name)->lower()->endsWith(['.jpg', '.jpeg', '.png', '.webp']))
                                 <div class="mt-3">
                                     @if($isImage)
-                                        <img class="h-28 w-40 rounded-lg border object-cover" src="{{ route('files.cart-design', $item) }}" alt="{{ $item->design_file_name }}">
+                                        <img class="h-28 w-40 rounded-lg border object-cover" src="{{ route('files.cart-design', $item) }}" alt="{{ $item->design_file_name }}" loading="lazy" decoding="async" sizes="160px">
                                     @endif
                                     <a class="mt-2 inline-block text-sm font-semibold text-green-700" href="{{ route('files.cart-design', $item) }}" target="_blank">{{ $item->design_file_name }}</a>
                                 </div>

@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
                 $settings = collect();
             }
             $view->with('appSettings', $settings);
+            $view->with('mediaUrl', fn (?string $path) => $path ? url('/media/'.ltrim($path, '/')) : null);
         });
     }
 }

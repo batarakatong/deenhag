@@ -1,8 +1,8 @@
-<a href="{{ route('products.show', $product) }}" class="rounded bg-white p-5 shadow transition hover:-translate-y-1">
-    @if($product->image && \Illuminate\Support\Facades\Storage::exists($product->image))
-        <img class="mb-4 h-32 w-full rounded object-cover" src="{{ asset(str_replace('public/', 'storage/', $product->image)) }}" alt="{{ $product->name }}">
+<a href="{{ route('products.show', $product) }}" class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    @if($product->image)
+        <img class="mb-4 h-36 w-full rounded-xl bg-emerald-50 object-cover" src="{{ $mediaUrl($product->image) }}" alt="{{ $product->name }}" loading="lazy" decoding="async" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw">
     @else
-        <div class="mb-4 flex h-32 items-center justify-center rounded bg-green-100 text-5xl font-bold text-green-700">{{ substr($product->name, 0, 1) }}</div>
+        <div class="mb-4 flex h-36 items-center justify-center rounded-xl bg-green-100 text-5xl font-bold text-green-700">{{ substr($product->name, 0, 1) }}</div>
     @endif
     <div class="text-sm text-green-700">{{ $product->category->name }}</div>
     <div class="text-lg font-bold">{{ $product->name }}</div>

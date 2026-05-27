@@ -18,7 +18,7 @@
                         @php($isImage = str($file->original_name)->lower()->endsWith(['.jpg', '.jpeg', '.png', '.webp']))
                         <a class="rounded-lg border p-3" href="{{ route('track.files.show', ['file' => $file, 'order_number' => $order->order_number]) }}" target="_blank">
                             @if($isImage)
-                                <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('track.files.show', ['file' => $file, 'order_number' => $order->order_number]) }}" alt="{{ $file->original_name }}">
+                                <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('track.files.show', ['file' => $file, 'order_number' => $order->order_number]) }}" alt="{{ $file->original_name }}" loading="lazy" decoding="async">
                             @endif
                             <div class="text-sm font-semibold text-green-700">{{ $file->original_name }}</div>
                             <div class="text-xs text-slate-500">{{ $file->file_type }}</div>

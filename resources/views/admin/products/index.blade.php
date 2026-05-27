@@ -14,10 +14,17 @@
     <select class="rounded border p-3" name="pricing_type"><option value="">Tipe harga</option>@foreach(['pcs','meter','square_meter','package','rim','manual'] as $type)<option value="{{ $type }}" @selected(request('pricing_type')===$type)>{{ $type }}</option>@endforeach</select>
     <button class="rounded bg-green-600 px-5 py-3 text-white">Filter</button>
 </form>
-<div class="rounded bg-white shadow">
+<div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
     @foreach($products as $product)
-        <div class="grid gap-3 border-b p-4 md:grid-cols-9">
-            <div class="font-semibold md:col-span-2">{{ $product->name }}<div class="text-xs text-slate-500">{{ $product->product_code ?: '-' }}</div></div>
+        <div class="grid items-center gap-3 border-b p-4 md:grid-cols-10">
+            <div class="flex items-center gap-3 md:col-span-3">
+                @if($product->image)
+                    <img class="h-14 w-20 rounded-xl border border-slate-100 object-cover" src="{{ $mediaUrl($product->image) }}" alt="{{ $product->name }}" loading="lazy" decoding="async" sizes="80px">
+                @else
+                    <div class="grid h-14 w-20 place-items-center rounded-xl bg-emerald-50 font-bold text-emerald-700">{{ substr($product->name,0,1) }}</div>
+                @endif
+                <div class="font-semibold">{{ $product->name }}<div class="text-xs text-slate-500">{{ $product->product_code ?: '-' }}</div></div>
+            </div>
             <div>{{ $product->category->name }}</div>
             <div>{{ $product->service_type }}</div>
             <div>{{ $product->print_method ?: '-' }}</div>

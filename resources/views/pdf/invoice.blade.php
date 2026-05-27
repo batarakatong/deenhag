@@ -25,7 +25,7 @@
         <thead><tr><th>Produk</th><th>Spesifikasi</th><th>Qty</th><th class="right">Total</th></tr></thead>
         <tbody>
             @foreach($order->items as $item)
-                <tr><td>{{ $item->product_name }}</td><td>{{ collect($item->specifications)->flatten()->join(', ') }}</td><td>{{ $item->quantity }}</td><td class="right">Rp {{ number_format($item->total_price,0,',','.') }}</td></tr>
+                <tr><td>{{ $item->product_name }}</td><td>@include('partials.specifications', ['specifications' => $item->specifications])</td><td>{{ $item->quantity }}</td><td class="right">Rp {{ number_format($item->total_price,0,',','.') }}</td></tr>
             @endforeach
         </tbody>
         <tfoot>

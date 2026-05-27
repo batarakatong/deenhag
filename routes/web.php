@@ -29,6 +29,7 @@ Route::post('/products/{product:slug}/calculate', [StorefrontController::class, 
 Route::get('/track-order', [StorefrontController::class, 'track'])->name('track');
 Route::post('/webhooks/waha', WahaWebhookController::class)->name('webhooks.waha');
 Route::get('/track-order/files/{file}', [FilePreviewController::class, 'publicOrderFile'])->name('track.files.show');
+Route::get('/media/{path}', [FilePreviewController::class, 'media'])->where('path', '.*')->name('media.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -43,6 +44,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/two-factor-challenge', [AuthController::class, 'challenge'])->name('2fa.challenge');
 Route::post('/two-factor-challenge', [AuthController::class, 'verifyTwoFactor'])->name('2fa.verify');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('/logout-now', [AuthController::class, 'logout'])->middleware('auth')->name('logout.get');
 
 Route::middleware('auth')->group(function () {
     Route::get('/files/cart-items/{item}/design', [FilePreviewController::class, 'cartDesign'])->name('files.cart-design');

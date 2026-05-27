@@ -19,13 +19,30 @@ class CartController extends Controller
     {
         $data = $request->validate([
             'product_variant_id' => ['nullable', 'exists:product_variants,id'],
+            'variant_quantities' => ['nullable', 'array'],
+            'variant_quantities.*' => ['nullable', 'integer', 'min:0'],
             'options' => ['nullable', 'array'],
             'width' => ['nullable', 'numeric', 'min:0.01'],
             'height' => ['nullable', 'numeric', 'min:0.01'],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['nullable', 'integer', 'min:1'],
             'customer_note' => ['nullable', 'string'],
             'design_file' => ['nullable', 'file', 'mimes:pdf,png,jpg,jpeg,ai,cdr,psd', 'max:51200'],
         ]);
+        $variantQuantities = collect($data['variant_quantities'] ?? [])
+            ->map(fn ($quantity) => (int) $quantity)
+            ->filter(fn ($quantity) => $quantity > 0);
+        if ($variantQuantities->isNotEmpty()) {
+            $validVariantCount = $product->variants()
+                ->whereIn('id', $variantQuantities->keys()->all())
+                ->count();
+            abort_unless($validVariantCount === $variantQuantities->count(), 422, 'Varian produk tidak valid.');
+
+            $data['variant_quantities'] = $variantQuantities->all();
+            $data['quantity'] = $variantQuantities->sum();
+            $data['product_variant_id'] = null;
+        } else {
+            $data['quantity'] = max((int) ($data['quantity'] ?? $product->min_order_qty), $product->min_order_qty);
+        }
 
         $price = $pricing->calculate($product, $data);
         $filePath = null;

@@ -73,14 +73,15 @@
                         <span class="muted">{{ $item->product?->service_type }} / {{ $item->product?->print_method }}</span>
                     </td>
                     <td>
-                        @foreach((array) $item->specifications as $key => $value)
-                            @if(is_array($value))
-                                @foreach($value as $child)
-                                    <div><span class="check"></span> {{ ucfirst($key) }}: {{ $child ?: '-' }}</div>
-                                @endforeach
-                            @else
-                                <div><span class="check"></span> {{ ucfirst($key) }}: {{ $value ?: '-' }}</div>
-                            @endif
+                        @php($specifications = collect($item->specifications))
+                        @if($specifications->get('variant'))
+                            <div><span class="check"></span> Varian: {{ $specifications->get('variant') }}</div>
+                        @endif
+                        @foreach(collect($specifications->get('variants')) as $variantRow)
+                            <div><span class="check"></span> {{ $variantRow['variant'] ?? '-' }}: {{ $variantRow['quantity'] ?? 0 }} pcs</div>
+                        @endforeach
+                        @foreach(collect($specifications->get('options')) as $option)
+                            <div><span class="check"></span> Opsi: {{ $option }}</div>
                         @endforeach
                         <div><span class="check"></span> Lebar: {{ $item->width ?: '-' }}</div>
                         <div><span class="check"></span> Tinggi: {{ $item->height ?: '-' }}</div>

@@ -53,11 +53,22 @@ class SettingController extends Controller
             'smtp_encryption' => ['nullable', 'in:tls,ssl,none'],
             'smtp_from_address' => ['nullable', 'email'],
             'smtp_from_name' => ['nullable', 'string', 'max:160'],
+            'payment_bank_transfer_enabled' => ['nullable', 'boolean'],
+            'payment_cash_enabled' => ['nullable', 'boolean'],
+            'payment_qris_gopay_enabled' => ['nullable', 'boolean'],
+            'payment_bank_accounts' => ['nullable', 'string'],
+            'qris_provider_name' => ['nullable', 'string', 'max:120'],
+            'qris_api_base_url' => ['nullable', 'url'],
+            'qris_api_key' => ['nullable', 'string', 'max:255'],
+            'qris_merchant_id' => ['nullable', 'string', 'max:160'],
+            'qris_callback_url' => ['nullable', 'url'],
+            'qris_sandbox_mode' => ['nullable', 'boolean'],
+            'payment_instruction' => ['nullable', 'string'],
             'permissions' => ['nullable', 'array'],
         ]);
 
         if ($request->hasFile('company_logo')) {
-            $data['company_logo'] = $request->file('company_logo')->store('public/company');
+            $data['company_logo'] = $request->file('company_logo')->store('company', 'public');
         } else {
             unset($data['company_logo']);
         }
@@ -67,16 +78,20 @@ class SettingController extends Controller
                 Setting::put('role_permissions', $value, 'permissions', 'json');
                 continue;
             }
-            $group = str_starts_with($key, 'smtp_') ? 'mail'
+            $group = str_starts_with($key, 'payment_') || str_starts_with($key, 'qris_') ? 'payment'
+                : (str_starts_with($key, 'smtp_') ? 'mail'
                 : (str_starts_with($key, 'waha_') ? 'notification'
                 : (str_contains($key, 'printer') ? 'printer'
                 : (str_contains($key, 'theme') ? 'theme'
-                : (str_contains($key, 'header') || str_contains($key, 'footer') ? 'layout' : 'company'))));
+                : (str_contains($key, 'header') || str_contains($key, 'footer') ? 'layout' : 'company')))));
             Setting::put($key, $value, $group, is_bool($value) ? 'boolean' : 'string');
         }
 
         foreach (['waha_enabled', 'waha_notify_admin_order', 'waha_notify_customer_order', 'waha_notify_payment', 'waha_verify_ssl'] as $key) {
             Setting::put($key, $request->boolean($key) ? '1' : '0', 'notification', 'boolean');
+        }
+        foreach (['payment_bank_transfer_enabled', 'payment_cash_enabled', 'payment_qris_gopay_enabled', 'qris_sandbox_mode'] as $key) {
+            Setting::put($key, $request->boolean($key) ? '1' : '0', 'payment', 'boolean');
         }
 
         return back()->with('status', 'Setting sistem diperbarui.');

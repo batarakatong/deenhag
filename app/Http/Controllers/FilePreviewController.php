@@ -9,6 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class FilePreviewController extends Controller
 {
+    public function media(string $path)
+    {
+        $path = ltrim($path, '/');
+        $publicPath = str_starts_with($path, 'public/') ? substr($path, 7) : $path;
+
+        if (Storage::disk('public')->exists($publicPath)) {
+            return response()->file(Storage::disk('public')->path($publicPath));
+        }
+
+        if (Storage::exists($path)) {
+            return response()->file(Storage::path($path));
+        }
+
+        if (! str_starts_with($path, 'public/') && Storage::exists('public/'.$path)) {
+            return response()->file(Storage::path('public/'.$path));
+        }
+
+        abort(404);
+    }
+
     public function cartDesign(CartItem $item)
     {
         abort_unless($item->cart->user_id === auth()->id(), 403);

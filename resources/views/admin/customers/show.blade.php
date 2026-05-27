@@ -2,7 +2,18 @@
 @section('content')
 <h1 class="mb-5 text-2xl font-bold">Detail Customer</h1>
 <div class="grid gap-6 lg:grid-cols-3">
-    <form method="post" action="{{ route('admin.customers.update', $customer) }}" class="grid gap-4 rounded-xl bg-white p-6 shadow lg:col-span-2">@csrf @method('patch')
+    <form method="post" action="{{ route('admin.customers.update', $customer) }}" enctype="multipart/form-data" class="grid gap-4 rounded-xl bg-white p-6 shadow lg:col-span-2">@csrf @method('patch')
+        <div class="flex items-center gap-4">
+            @if($customer->user->avatar_path)
+                <img class="h-20 w-20 rounded-full object-cover" src="{{ $mediaUrl($customer->user->avatar_path) }}" alt="{{ $customer->user->name }}" decoding="async">
+            @else
+                <div class="grid h-20 w-20 place-items-center rounded-full bg-green-100 text-2xl font-bold text-green-700">{{ substr($customer->user->name,0,1) }}</div>
+            @endif
+            <label class="grid gap-2">
+                <span class="text-sm font-semibold">Foto Profil</span>
+                <input class="field" name="avatar" type="file" accept="image/*">
+            </label>
+        </div>
         <input class="field" name="name" value="{{ $customer->user->name }}" required>
         <input class="field" name="email" type="email" value="{{ $customer->user->email }}" required>
         <input class="field" name="phone" value="{{ $customer->user->phone }}" placeholder="No HP / WA">

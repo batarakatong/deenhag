@@ -27,12 +27,17 @@ class CustomerProfileController extends Controller
             'city' => ['nullable', 'string', 'max:80'],
             'province' => ['nullable', 'string', 'max:80'],
             'postal_code' => ['nullable', 'string', 'max:20'],
+            'avatar' => ['nullable', 'image', 'max:4096'],
         ]);
 
-        auth()->user()->update([
+        $userData = [
             'name' => $data['name'],
             'phone' => $data['phone'],
-        ]);
+        ];
+        if ($request->hasFile('avatar')) {
+            $userData['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+        }
+        auth()->user()->update($userData);
 
         Customer::updateOrCreate(
             ['user_id' => auth()->id()],

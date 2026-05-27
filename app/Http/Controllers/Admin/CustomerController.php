@@ -44,14 +44,19 @@ class CustomerController extends Controller
             'postal_code' => ['nullable', 'max:20'],
             'status' => ['required', 'in:active,inactive'],
             'two_factor_enabled' => ['nullable', 'boolean'],
+            'avatar' => ['nullable', 'image', 'max:4096'],
         ]);
 
-        $customer->user->update([
+        $userData = [
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,
             'two_factor_enabled' => $request->boolean('two_factor_enabled'),
-        ]);
+        ];
+        if ($request->hasFile('avatar')) {
+            $userData['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+        }
+        $customer->user->update($userData);
         $customer->update($request->only(['company_name', 'address', 'city', 'province', 'postal_code', 'status']));
 
         return back()->with('status', 'Customer diperbarui.');

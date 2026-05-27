@@ -52,6 +52,17 @@ class GreenPrintingSeeder extends Seeder
         foreach ([['method', 'DTF A4', 15000], ['method', 'DTF A3', 25000], ['method', 'Screen Printing 1 Warna', 30000], ['finishing', 'Press ulang', 5000]] as $option) {
             $shirt->options()->create(['option_type' => $option[0], 'name' => $option[1], 'price_modifier' => $option[2], 'calculation_type' => 'per_qty', 'is_active' => true]);
         }
+        foreach ([['S', 75000], ['M', 75000], ['L', 80000], ['XL', 85000], ['XXL', 95000]] as $variant) {
+            $shirt->variants()->create(['name' => $variant[0], 'sku' => 'SB-KAOS-'.$variant[0], 'price' => $variant[1], 'min_qty' => 1, 'is_active' => true]);
+        }
+
+        $jersey = Product::create(['category_id' => $categories[3]->id, 'product_code' => 'GP-SB-002', 'name' => 'Jersey Custom', 'slug' => 'jersey-custom', 'service_type' => 'sablon', 'description' => 'Jersey custom full print atau sablon untuk tim, komunitas, dan event.', 'technical_specs' => 'Bahan dryfit/serena, ukuran S sampai XXL, nama dan nomor bisa custom.', 'file_guidelines' => 'Upload desain PNG/PDF/AI/PSD, sertakan daftar nama, nomor, ukuran, dan jumlah.', 'base_price' => 90000, 'pricing_type' => 'pcs', 'print_method' => 'Sublim / DTF / Polyflex', 'default_material' => 'Dryfit', 'unit' => 'pcs', 'estimated_days' => 7, 'min_order_qty' => 1, 'is_active' => true]);
+        foreach ([['S', 90000], ['M', 90000], ['L', 95000], ['XL', 100000], ['XXL', 110000]] as $variant) {
+            $jersey->variants()->create(['name' => $variant[0], 'sku' => 'JSY-'.$variant[0], 'price' => $variant[1], 'min_qty' => 1, 'is_active' => true]);
+        }
+        foreach ([['custom', 'Nama + Nomor', 15000], ['finishing', 'Packing satuan', 3000], ['method', 'Full Print Sublim', 25000]] as $option) {
+            $jersey->options()->create(['option_type' => $option[0], 'name' => $option[1], 'price_modifier' => $option[2], 'calculation_type' => 'per_qty', 'is_active' => true]);
+        }
 
         $paper = MaterialCategory::create(['name' => 'Kertas']);
         $ink = MaterialCategory::create(['name' => 'Tinta dan Bahan Cetak']);
@@ -101,6 +112,13 @@ class GreenPrintingSeeder extends Seeder
             'waha_verify_ssl' => '0',
             'waha_template_order' => 'Halo {name}, order {order_number} sudah dibuat dengan total {total}.',
             'waha_template_payment' => 'Pembayaran order {order_number} berstatus {payment_status}.',
+            'payment_bank_transfer_enabled' => '1',
+            'payment_cash_enabled' => '1',
+            'payment_qris_gopay_enabled' => '0',
+            'payment_bank_accounts' => "BCA 1234567890 a.n GreenPrinting\nBRI 0987654321 a.n GreenPrinting",
+            'qris_provider_name' => 'GoPay / QRIS',
+            'qris_sandbox_mode' => '1',
+            'payment_instruction' => 'Transfer sesuai total invoice lalu upload bukti pembayaran. QRIS/GoPay akan tersedia setelah API aktif.',
         ] as $key => $value) {
             Setting::put($key, $value);
         }

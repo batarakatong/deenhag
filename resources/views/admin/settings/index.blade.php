@@ -43,6 +43,23 @@
     </section>
 
     <section class="rounded-xl bg-white p-6 shadow">
+        <h2 class="mb-4 text-lg font-bold">Pilihan Pembayaran & QRIS GoPay</h2>
+        <div class="grid gap-4 md:grid-cols-2">
+            <label class="flex items-center gap-2"><input type="checkbox" name="payment_bank_transfer_enabled" value="1" @checked($settings->get('payment_bank_transfer_enabled','1')==='1')> Manual transfer bank</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="payment_cash_enabled" value="1" @checked($settings->get('payment_cash_enabled','1')==='1')> Cash / bayar di toko</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="payment_qris_gopay_enabled" value="1" @checked($settings->get('payment_qris_gopay_enabled')==='1')> QRIS GoPay</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="qris_sandbox_mode" value="1" @checked($settings->get('qris_sandbox_mode','1')==='1')> Sandbox mode</label>
+            <textarea class="field md:col-span-2" name="payment_bank_accounts" placeholder="Daftar rekening bank">{{ $settings->get('payment_bank_accounts') }}</textarea>
+            <input class="field" name="qris_provider_name" value="{{ $settings->get('qris_provider_name', 'GoPay / QRIS') }}" placeholder="Provider QRIS">
+            <input class="field" name="qris_api_base_url" value="{{ $settings->get('qris_api_base_url') }}" placeholder="QRIS API base URL">
+            <input class="field" name="qris_api_key" value="{{ $settings->get('qris_api_key') }}" placeholder="QRIS API key">
+            <input class="field" name="qris_merchant_id" value="{{ $settings->get('qris_merchant_id') }}" placeholder="Merchant ID">
+            <input class="field md:col-span-2" name="qris_callback_url" value="{{ $settings->get('qris_callback_url', url('/webhooks/payment/qris')) }}" placeholder="Callback URL">
+            <textarea class="field md:col-span-2" name="payment_instruction" placeholder="Instruksi pembayaran untuk customer">{{ $settings->get('payment_instruction', 'Transfer sesuai total invoice lalu upload bukti pembayaran. QRIS/GoPay akan tersedia setelah API aktif.') }}</textarea>
+        </div>
+    </section>
+
+    <section class="rounded-xl bg-white p-6 shadow">
         <h2 class="mb-4 text-lg font-bold">Tema, Header, Footer</h2>
         <div class="grid gap-4 md:grid-cols-2">
             <select class="rounded border p-3" name="theme_name">

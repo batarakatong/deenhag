@@ -12,7 +12,7 @@
         <div class="rounded bg-white p-5 shadow">
             <h2 class="mb-3 font-bold">Item</h2>
             @foreach($order->items as $item)
-                <div class="border-b py-3 last:border-0"><b>{{ $item->product_name }}</b><div class="text-sm">{{ collect($item->specifications)->flatten()->join(', ') }}</div><div>Qty {{ $item->quantity }} - Rp {{ number_format($item->total_price,0,',','.') }}</div></div>
+                <div class="border-b py-3 last:border-0"><b>{{ $item->product_name }}</b><div class="text-sm">@include('partials.specifications', ['specifications' => $item->specifications])</div><div>Qty {{ $item->quantity }} - Rp {{ number_format($item->total_price,0,',','.') }}</div></div>
             @endforeach
         </div>
         <div class="rounded bg-white p-5 shadow">
@@ -33,7 +33,7 @@
                 @php($isImage = str($file->original_name)->lower()->endsWith(['.jpg', '.jpeg', '.png', '.webp']))
                 <a class="rounded-lg border p-3" href="{{ route('files.order-file', $file) }}" target="_blank">
                     @if($isImage)
-                        <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('files.order-file', $file) }}" alt="{{ $file->original_name }}">
+                        <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('files.order-file', $file) }}" alt="{{ $file->original_name }}" loading="lazy" decoding="async">
                     @endif
                     <div class="font-semibold text-green-700">{{ $file->original_name }}</div>
                     <div class="text-sm text-slate-500">{{ $file->file_type }}</div>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'greenprinting-v1';
+const CACHE_NAME = 'greenprinting-v2';
 const CORE_ASSETS = [
   '/',
   '/offline.html',
@@ -21,6 +21,17 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  const dynamicPrefixes = ['/login', '/logout', '/register', '/forgot-password', '/reset-password', '/two-factor-challenge', '/admin', '/account', '/orders', '/checkout', '/cart'];
+  const isDynamic = url.origin === self.location.origin && dynamicPrefixes.some(prefix => url.pathname.startsWith(prefix));
+
+  if (event.request.mode === 'navigate' || isDynamic) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match('/offline.html')))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(cached => {

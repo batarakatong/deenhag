@@ -14,7 +14,7 @@
             @foreach($order->items as $item)
                 <div class="border-b py-3 last:border-0">
                     <div class="font-semibold">{{ $item->product_name }}</div>
-                    <div class="text-sm text-slate-600">{{ collect($item->specifications)->flatten()->join(', ') }}</div>
+                    <div class="text-sm text-slate-600">@include('partials.specifications', ['specifications' => $item->specifications])</div>
                     <div class="text-sm">Qty {{ $item->quantity }} - Rp {{ number_format($item->total_price, 0, ',', '.') }}</div>
                 </div>
             @endforeach
@@ -40,7 +40,7 @@
                     @php($isImage = str($file->original_name)->lower()->endsWith(['.jpg', '.jpeg', '.png', '.webp']))
                     <a class="rounded-lg border p-3" href="{{ route('files.order-file', $file) }}" target="_blank">
                         @if($isImage)
-                            <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('files.order-file', $file) }}" alt="{{ $file->original_name }}">
+                            <img class="mb-2 h-32 w-full rounded object-cover" src="{{ route('files.order-file', $file) }}" alt="{{ $file->original_name }}" loading="lazy" decoding="async">
                         @endif
                         <div class="text-sm font-semibold text-green-700">{{ $file->original_name }}</div>
                         <div class="text-xs text-slate-500">{{ $file->file_type }}</div>
