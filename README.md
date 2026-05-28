@@ -159,13 +159,13 @@ Digunakan untuk:
 
 ```text
 WAHA Base URL:
-https://waha-sveondnwqart.axpq.sumopod.my.id
+
 
 WAHA API Key:
 Isi X-Api-Key dari WAHA Cloud
 
 Session:
-no_ku
+xxxxx
 
 Nomor Admin:
 62xxxxxxxxxx
